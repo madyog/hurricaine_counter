@@ -48,7 +48,7 @@ class HurricaneService:
                     year = float(date[0:4])
                     if year > 1900:
                         hurricane_count += 1
-                        self.results.append(name + ", " + date_of_landfall + ", " + str(max_speed))
+                        self.results.append(name + ", " + date_of_landfall + ", " + str(max_speed) + "kn")
                 name = line[1]
                 hit_florida = False
                 max_speed = -math.inf

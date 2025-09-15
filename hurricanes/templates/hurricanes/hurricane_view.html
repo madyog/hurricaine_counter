@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Florida Hurricanes</title>
+</head>
+<body>
+    <h1>Florida Hurricanes</h1>
+
+    <!-- Button to trigger results -->
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Show Hurricanes</button>
+    </form>
+
+    {% if results %}
+        <h2>Results</h2>
+        <ul>
+            {% for hurricane in results %}
+                <li>{{ hurricane }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
