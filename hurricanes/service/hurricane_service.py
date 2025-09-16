@@ -17,11 +17,11 @@ class HurricaneService:
         self.results = []  # store list of hurricanes
 
     def count_florida_hurricanes(self, use_boundary_box=False):
-        html_path = os.path.join("/Users/madyogorek/PycharmProjects/django_getting_started/hurricaine_counter/hurricanes/data", "HURDAT2.html")
+        html_path = os.path.join("/Users/madyogorek/PycharmProjects/django_getting_started/hurricane_counter/hurricanes/data", "HURDAT2.html")
         fl_polygon = None
         if not use_boundary_box:
             fl_census_shp_path = os.path.join(
-                "/Users/madyogorek/PycharmProjects/django_getting_started/hurricaine_counter/hurricanes/data",
+                "/Users/madyogorek/PycharmProjects/django_getting_started/hurricane_counter/hurricanes/data",
                 "tl_2019_12_place.shp")
             fl_census_shp = gpd.read_file(fl_census_shp_path)
             fl_polygon = fl_census_shp.unary_union #merges data points into shape of florida
