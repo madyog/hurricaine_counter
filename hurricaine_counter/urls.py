@@ -16,11 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from website.views import welcome, date
 from hurricanes.views import hurricane_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hurricane_view),
-    path('date.html', date)
 ]

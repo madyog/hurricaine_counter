@@ -10,45 +10,39 @@ import os
 
 class HurricaneService:
     """
-    Service class to process hurricane data blocks from HTML <pre> content.
+    Service class to process hurricane data from HURDAT2
     """
 
     def __init__(self):
-        """
-        data_lines: list of lines (strings) from the <pre> block
-        """
-        self.results = []  # store processed data
+        self.results = []  # store list of hurricanes
 
-    def count_florida_hurricanes(self):
-        # Paths
+    def count_florida_hurricanes(self, use_boundary_box=False):
         html_path = os.path.join("/Users/madyogorek/PycharmProjects/django_getting_started/hurricaine_counter/hurricanes/data", "HURDAT2.html")
-        FLORIDA_BOUNDARY_PATH = os.path.join("/Users/madyogorek/PycharmProjects/django_getting_started/hurricaine_counter/hurricanes/data", "tl_2019_12_place.shp")
-        boundary = gpd.read_file(FLORIDA_BOUNDARY_PATH)
-        fl_polygon = boundary.unary_union
-        # Read the first table from the HTML
-        with open(html_path, "r", encoding="utf-8") as f:
+        fl_polygon = None
+        if not use_boundary_box:
+            fl_census_shp_path = os.path.join(
+                "/Users/madyogorek/PycharmProjects/django_getting_started/hurricaine_counter/hurricanes/data",
+                "tl_2019_12_place.shp")
+            fl_census_shp = gpd.read_file(fl_census_shp_path)
+            fl_polygon = fl_census_shp.unary_union #merges data points into shape of florida
+        with open(html_path, "r", encoding="utf-8") as f: #read html file
             lxml = BeautifulSoup(f, "lxml")
-        # Extract text inside <pre>
-        pre_text = lxml.find("pre").get_text()
-        # Split into lines
-        lines = pre_text.strip().splitlines()
-        hurricane_count = 0
-        date = ""
-        name = ""
+        pre_text = lxml.find("pre").get_text() #extract text from <pre>
+        lines = pre_text.strip().splitlines() #split into iterable lines
+        hurricane_count, date_of_landfall = 0, 0
+        date, name = "", ""
         i = 0
         hit_florida = False
-        max_speed = - math.inf
-        date_of_landfall = 0
+        max_speed = -math.inf
         while i < len(lines):
-            # remove all spaces
-            clean_line = lines[i].replace(" ", "")
+            clean_line = lines[i].replace(" ", "") #remove spaces
             line = clean_line.split(",")
             if len(line) == 4:  # header line
                 if hit_florida:
                     year = float(date[0:4])
                     if year > 1900:
                         hurricane_count += 1
-                        self.results.append(name + ", " + date_of_landfall + ", " + str(max_speed) + "kn")
+                        self.results.append(name + ", Date: " + date_of_landfall + ", Max Speed: " + str(max_speed) + "kn")
                 name = line[1]
                 hit_florida = False
                 max_speed = -math.inf
@@ -56,17 +50,17 @@ class HurricaneService:
                 i += 1
                 continue
             date = line[0]
-            latitude = line[4]
-            longitude = line[5]
             speed = float(line[6])
             max_speed = max(speed, max_speed)
-            latitude = latitude.strip().upper()
-            lat = self.convert_coordinate(latitude)
-            long = self.convert_coordinate(longitude)
-            hit = self.is_in_florida(lat, long, fl_polygon)
+            lat = self.convert_coordinate(line[4])
+            long = self.convert_coordinate(line[5])
+            if use_boundary_box:
+                hit = self.is_in_florida_box(lat, long)
+            else:
+                hit = self.is_in_florida(lat, long, fl_polygon)
             if hit:
                 date_of_landfall = date
-            hit_florida = hit_florida or hit
+            hit_florida = hit_florida or hit #if this reading hit florida or a previous reading from this hurricane hit florida
             i += 1
         return self.results
 
@@ -84,3 +78,8 @@ class HurricaneService:
     def is_in_florida(self, lat, long, fl_polygon):
         point = Point(long, lat)
         return fl_polygon.contains(point)
+
+    def is_in_florida_box(self, lat, long):
+        if (24.39 <= lat <= 31.00 and -87.63 <= long <= -79.97):
+            return True
+        return False
