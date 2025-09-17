@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Florida Hurricanes Post 1900</title>
+</head>
+<body>
+    <h1>Florida Hurricanes Post 1900</h1>
+
+    <!-- Button to trigger results -->
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="boundary_box">Calculate using boundary box</button>
+        <button type="submit" name="action" value="shp_file">Calculate using Florida shp file</button>
+    </form>
+
+    {% if results %}
+        <h2>Results</h2>
+        <ul>
+            {% for hurricane in results %}
+                <li>{{ hurricane }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

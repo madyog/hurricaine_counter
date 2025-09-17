@@ -1,5 +1,5 @@
 """
-ASGI config for hurricaine_counter project.
+ASGI config for hurricane_counter project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hurricaine_counter.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hurricane_counter.settings')
 
 application = get_asgi_application()
